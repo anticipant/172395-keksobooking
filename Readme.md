@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дмитрий Шахович](https://up.htmlacademy.ru/javascript/12/user/172395).
-* Наставник: `Неизвестно`.
+* Наставник: [Филипп Шамсиев](https://github.com/toolX).
 
 ---
 
