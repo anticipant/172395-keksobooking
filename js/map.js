@@ -9,7 +9,7 @@ var announcements = [];
 for (var i = 1; i <= countOfAnnouncment; i++) {
   announcements.push({
     'author': {
-      'avatar': 'img/avatars/user{{0' + i + '}}.png'
+      'avatar': 'img/avatars/user0' + i + '.png'
     },
     'offer': {
       'title': (function () {
@@ -19,7 +19,7 @@ for (var i = 1; i <= countOfAnnouncment; i++) {
         return titleValue;
 
       })(),
-      'address': '{{location.x}}, {{location.y}}',
+      'address': [location.x, location.y],
       'price': getRandomInt(1000, 1000000),
       'type': getRandomElement(announcementTypes, 1),
       'rooms': getRandomInt(1, 5),
@@ -55,5 +55,25 @@ function getRandomElement(arr, quantity) {
   }
   return resultArr;
 }
+var widthPin = 50;
+var heightPin = 70;
+var map = document.querySelector('.map__pins');
+var template = document.querySelector('template').content;
+var pinTemplate = template.querySelector('button.map__pin');
+var renderPin = function (announcement) {
+  var pinElement = pinTemplate.cloneNode(true);
+
+  pinElement.style.left = (announcement.location.x - widthPin / 2) + 'px';
+  pinElement.style.top = (announcement.location.y - heightPin / 2) + 'px';
+  pinElement.querySelector('img').setAttribute('src', announcement.author.avatar);
+
+  return pinElement;
+};
+var pinFragments = document.createDocumentFragment();
+
+for (var t = 0; t < announcements.length; t++) {
+  pinFragments.appendChild(renderPin(announcements[t]));
+}
+map.appendChild(pinFragments);
 
 
