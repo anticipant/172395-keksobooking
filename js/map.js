@@ -57,10 +57,13 @@ function getRandomElement(arr, quantity) {
 }
 var widthPin = 50;
 var heightPin = 70;
-var map = document.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
+var mapFilter = document.querySelector('.map__filters-container');
 var template = document.querySelector('template').content;
+var cardTemplate = template.querySelector('article.map__card');
 var pinTemplate = template.querySelector('button.map__pin');
-var renderPin = function (announcement) {
+function renderPins(announcement) {
   var pinElement = pinTemplate.cloneNode(true);
 
   pinElement.style.left = (announcement.location.x - widthPin / 2) + 'px';
@@ -68,12 +71,69 @@ var renderPin = function (announcement) {
   pinElement.querySelector('img').setAttribute('src', announcement.author.avatar);
 
   return pinElement;
-};
-var pinFragments = document.createDocumentFragment();
-
-for (var t = 0; t < announcements.length; t++) {
-  pinFragments.appendChild(renderPin(announcements[t]));
 }
-map.appendChild(pinFragments);
+function renderCards(announcement) {
+  var cardElement = cardTemplate.cloneNode(true);
+  cardElement.querySelector('h3').textContent = announcement.offer.title;
+  cardElement.querySelector('h3 + p > small').textContent = announcement.offer.address; // что я не так сделал с объектом announcement.offer.address при определении его?
+  cardElement.querySelector('h4').textContent = announcement.offer.type;
+  var rooms = announcement.offer.rooms;
+  var roomsWordForm;
+  if (rooms === 1) {
+    roomsWordForm = 'комната';
+  } else if (rooms < 5) {
+    roomsWordForm = 'комнаты';
+  } else {
+    roomsWordForm = 'комнат';
+  }
+  var guests = announcement.offer.rooms;
+  var guestsWordForm = (announcement.offer.guests) > 1 ? 'гостей' : 'гостя';
+  cardElement.querySelector('h4 + p').textContent = (rooms + ' ' + roomsWordForm + ' для ' + guests + ' ' + guestsWordForm);
+  cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + announcement.offer.checkin + ', выезд до ' + announcement.offer.checkout;
+  cardElement.querySelector('.popup__price').innerHTML = (announcement.offer.price + '&#x20bd;/ночь');
+  function getListFeatures() {
+    var listFeatures = '';
+    if (typeof announcement.offer.features === 'string') {
+      listFeatures = listFeatures + '<li class="feature feature--' + announcement.offer.features + '"></li>';
+    } else {
+      for (var l = 0; l < announcement.offer.features.length; l++) {
+        listFeatures = listFeatures + '<li class="feature feature--' + announcement.offer.features[l] + '"></li>';
+      }
+    }
+    return listFeatures;
+  }
+  cardElement.querySelector('.popup__features').innerHTML = getListFeatures();
+  cardElement.querySelector('.popup__features + p').textContent = announcement.offer.description;
+  function getListPhotos() {
+    var listPhotos = '';
+    if (typeof announcement.offer.photos === 'string') {
+      listPhotos = listPhotos + '<li><img src="' + announcement.offer.photos + '" width="100%"></li>';
+    } else {
+      for (var l = 0; l < announcement.offer.photos.length; l++) {
+        listPhotos = listPhotos + '<li><img src="' + announcement.offer.photos[l] + '" width="100%"></li>';
+      }
+    }
+    return listPhotos;
+  }
+  cardElement.querySelector('.popup__pictures').innerHTML = getListPhotos();
+  cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
+
+  return cardElement;
+}
+function getTemplateList(renderFunction, pasteTarget, isInsertBefore) {
+  var fragments = document.createDocumentFragment();
+  for (var t = 0; t < announcements.length; t++) {
+    fragments.appendChild(renderFunction(announcements[t]));
+  }
+  if (isInsertBefore) {
+    pasteTarget.insertBefore(fragments, isInsertBefore);
+  } else {
+    pasteTarget.appendChild(fragments);
+  }
+
+
+}
+getTemplateList(renderPins, mapPins, false);
+getTemplateList(renderCards, map, mapFilter);
 
 
