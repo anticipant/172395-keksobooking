@@ -1,7 +1,7 @@
 'use strict';
 var countOfAnnouncment = 8;
 var announcementTitles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var announcementTypes = ['Квартира', 'Дом', 'Бунгало'];
+var announcementTypes = ['flat', 'house', 'bungalo'];
 var announcementCheckinCheckoutValues = ['12:00', '13:00', '14:00'];
 var announcementFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var announcementPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
@@ -89,13 +89,11 @@ function getListPhotos(photo) {
 }
 function renderCards(announcement) {
   var cardElement = cardTemplate.cloneNode(true);
-
-  cardElement.querySelector('h3').textContent = announcement.offer.title;
-  cardElement.querySelector('h3 + p > small').textContent = announcement.offer.adress;
-  cardElement.querySelector('h4').textContent = announcement.offer.type;
   var rooms = announcement.offer.rooms;
+  var guests = announcement.offer.rooms;
+  var guestsWordForm = (announcement.offer.guests) > 1 ? 'гостей' : 'гостя';
   var roomsWordForm;
-
+  var typeOfHousing;
   if (rooms === 1) {
     roomsWordForm = 'комната';
   } else if (rooms < 5) {
@@ -103,9 +101,16 @@ function renderCards(announcement) {
   } else {
     roomsWordForm = 'комнат';
   }
-  var guests = announcement.offer.rooms;
-  var guestsWordForm = (announcement.offer.guests) > 1 ? 'гостей' : 'гостя';
-
+  if (announcement.offer.type === 'flat') {
+    typeOfHousing = 'Квартира';
+  } else if (announcement.offer.type === 'house') {
+    typeOfHousing = 'Дом';
+  } else {
+    typeOfHousing = 'Бунгало';
+  }
+  cardElement.querySelector('h3').textContent = announcement.offer.title;
+  cardElement.querySelector('h3 + p > small').textContent = announcement.offer.adress;
+  cardElement.querySelector('h4').textContent = typeOfHousing;
   cardElement.querySelector('h4 + p').textContent = (rooms + ' ' + roomsWordForm + ' для ' + guests + ' ' + guestsWordForm);
   cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + announcement.offer.checkin + ', выезд до ' + announcement.offer.checkout;
   cardElement.querySelector('.popup__price').innerHTML = (announcement.offer.price + '&#x20bd;/ночь');
