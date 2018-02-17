@@ -6,12 +6,34 @@ var announcementCheckinCheckoutValues = ['12:00', '13:00', '14:00'];
 var announcementFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var announcementPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var announcements = [];
+var getAnnouncementTitle = function () {
+  var valueForDelete = getRandomInt(0, announcementTitles.length - 1);
+  var titleValue = announcementTitles[valueForDelete];
 
+  announcementTitles.splice(valueForDelete, 1);
+  return titleValue;
+};
+var getRandomInt = function (min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+var compareRandom = function () {
+  return Math.random() - 0.5;
+};
+var getRandomElement = function (arr, quantity) {
+  var sortedArr = arr.sort(compareRandom);
+  var resultArr = [];
+
+  for (var k = 0; k < quantity; k++) {
+    resultArr.push(sortedArr[k]);
+  }
+  return resultArr;
+};
 for (var i = 1; i <= countOfAnnouncment; i++) {
   var locationXCoords = getRandomInt(300, 900);
   var locationYCoords = getRandomInt(150, 500);
 
   announcements.push({
+    'id': i,
     'author': {
       'avatar': 'img/avatars/user0' + i + '.png'
     },
@@ -34,28 +56,7 @@ for (var i = 1; i <= countOfAnnouncment; i++) {
     }
   });
 }
-function getAnnouncementTitle() {
-  var valueForDelete = getRandomInt(0, announcementTitles.length - 1);
-  var titleValue = announcementTitles[valueForDelete];
 
-  announcementTitles.splice(valueForDelete, 1);
-  return titleValue;
-}
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-function compareRandom() {
-  return Math.random() - 0.5;
-}
-function getRandomElement(arr, quantity) {
-  var sortedArr = arr.sort(compareRandom);
-  var resultArr = [];
-
-  for (var k = 0; k < quantity; k++) {
-    resultArr.push(sortedArr[k]);
-  }
-  return resultArr;
-}
 var heightPin = 70;
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -63,31 +64,31 @@ var mapFilter = document.querySelector('.map__filters-container');
 var template = document.querySelector('template').content;
 var cardTemplate = template.querySelector('article.map__card');
 var pinTemplate = template.querySelector('button.map__pin');
-function renderPins(announcement) {
+var renderPins = function (announcement) {
   var pinElement = pinTemplate.cloneNode(true);
-
+  pinElement.setAttribute('data-serial-number', announcement.id);
   pinElement.style.left = announcement.location.x + 'px';
   pinElement.style.top = (announcement.location.y - heightPin / 2) + 'px';
   pinElement.querySelector('img').setAttribute('src', announcement.author.avatar);
   return pinElement;
-}
-function getListFeatures(feature) {
+};
+var getListFeatures = function (feature) {
   var listFeatures = '';
 
   for (var l = 0; l < feature.length; l++) {
     listFeatures = listFeatures + '<li class="feature feature--' + feature[l] + '"></li>';
   }
   return listFeatures;
-}
-function getListPhotos(photo) {
+};
+var getListPhotos = function (photo) {
   var listPhotos = '';
 
   for (var l = 0; l < photo.length; l++) {
     listPhotos = listPhotos + '<li><img src="' + photo[l] + '" width="70" height="70"></li>';
   }
   return listPhotos;
-}
-function renderCards(announcement) {
+};
+var renderCards = function (announcement) {
   var cardElement = cardTemplate.cloneNode(true);
   var rooms = announcement.offer.rooms;
   var guests = announcement.offer.rooms;
@@ -108,6 +109,8 @@ function renderCards(announcement) {
   } else {
     typeOfHousing = 'Бунгало';
   }
+  cardElement.setAttribute('data-serial-number', announcement.id);
+  cardElement.style.display = 'none';
   cardElement.querySelector('h3').textContent = announcement.offer.title;
   cardElement.querySelector('h3 + p > small').textContent = announcement.offer.adress;
   cardElement.querySelector('h4').textContent = typeOfHousing;
@@ -119,8 +122,8 @@ function renderCards(announcement) {
   cardElement.querySelector('.popup__pictures').innerHTML = getListPhotos(announcement.offer.photos);
   cardElement.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
   return cardElement;
-}
-function getTemplateList(renderFunction, pasteTarget, isInsertBefore) {
+};
+var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore) {
   var fragments = document.createDocumentFragment();
 
   for (var t = 0; t < announcements.length; t++) {
@@ -131,6 +134,61 @@ function getTemplateList(renderFunction, pasteTarget, isInsertBefore) {
   } else {
     pasteTarget.appendChild(fragments);
   }
-}
-getTemplateList(renderPins, mapPins, false);
-getTemplateList(renderCards, map, mapFilter);
+};
+// getTemplateList(renderPins, mapPins, false);
+// getTemplateList(renderCards, map, mapFilter);
+
+var VERTICAL_SHIFT_OF_MAIN_PIN = 48;
+var isActivePage = false;
+var form = document.querySelector('.notice__form');
+var address = document.querySelector('#address');
+var formFieldsets = form.querySelectorAll('fieldset');
+var mapMainPin = document.querySelector('.map__pin--main');
+var mapPinArray;
+var mapBlock = document.querySelector('.map');
+var mainPinPosition = {
+  x: 600,
+  y: 375
+};
+var getPositionOfMainPin = function () {
+  var positionX = mapMainPin.offsetLeft;
+  var positionY = mapMainPin.offsetTop;
+  mainPinPosition.x = positionX;
+  mainPinPosition.y = positionY;
+};
+var toggleFormStatus = function (status) {
+  formFieldsets.forEach(function (item) {
+    item.disabled = status;
+  });
+};
+var refreshInformation = function (evt) {
+  var serialNumber = evt.currentTarget.getAttribute('data-serial-number');
+  var pinCard = document.querySelector('article[data-serial-number="' + serialNumber + '"]');
+
+  if (previousCard) {
+    previousCard.style.display = 'none';
+  }
+  pinCard.style.display = 'block';
+  previousCard = pinCard;
+};
+var previousCard;
+var onMainPinClick = function () {
+  if (!isActivePage) {
+    mapBlock.classList.remove('map--faded');
+    form.classList.remove('notice__form--disabled');
+    toggleFormStatus(false);
+    isActivePage = true;
+  }
+  getPositionOfMainPin();
+  getTemplateList(renderPins, mapPins, false);
+  getTemplateList(renderCards, map, mapFilter);
+  mapPinArray = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  address.value = mainPinPosition.x + ', ' + (mainPinPosition.y + VERTICAL_SHIFT_OF_MAIN_PIN);
+  mapPinArray.forEach(function (item) {
+    item.addEventListener('click', refreshInformation);
+  });
+};
+address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
+toggleFormStatus(true);
+mapMainPin.addEventListener('mouseup', onMainPinClick);
+
