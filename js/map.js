@@ -66,9 +66,8 @@ var pinTemplate = template.querySelector('button.map__pin');
 function renderPins(announcement) {
   var pinElement = pinTemplate.cloneNode(true);
 
-  // console.log(announcement.offer.title + '  x='+announcement.location.x+' y=' + announcement.location.y); // Действительный адрес маркера
-  pinElement.style.left = announcement.location.x + 'px'; // translate выставляет на середину
-  pinElement.style.top = (announcement.location.y - heightPin / 2) + 'px'; // учитываю оставшуюся после translateY половину высоты
+  pinElement.style.left = announcement.location.x + 'px';
+  pinElement.style.top = (announcement.location.y - heightPin / 2) + 'px';
   pinElement.querySelector('img').setAttribute('src', announcement.author.avatar);
   return pinElement;
 }
