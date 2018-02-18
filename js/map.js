@@ -38,7 +38,7 @@ for (var i = 1; i <= countOfAnnouncment; i++) {
       'avatar': 'img/avatars/user0' + i + '.png'
     },
     'offer': {
-      'adress': locationXCoords + ', ' + locationYCoords,
+      'address': locationXCoords + ', ' + locationYCoords,
       'title': getAnnouncementTitle(),
       'price': getRandomInt(1000, 1000000),
       'type': getRandomElement(announcementTypes, 1),
@@ -88,33 +88,42 @@ var getListPhotos = function (photo) {
   }
   return listPhotos;
 };
+var getRoomsWordForm = function (countOfRooms) {
+  if (countOfRooms === 1) {
+    return 'комната';
+  } else if (countOfRooms < 5) {
+    return 'комнаты';
+  } else {
+    return 'комнат';
+  }
+};
+var getTypeOfHouse = function (type) {
+  var typeOfHousing;
+  switch (type) {
+    case 'flat':
+      typeOfHousing = 'Квартира';
+      break;
+    case 'house':
+      typeOfHousing = 'Дом';
+      break;
+    case 'bungalo':
+      typeOfHousing = 'Бунгало';
+      break;
+  }
+  return typeOfHousing;
+};
 var renderCards = function (announcement) {
   var cardElement = cardTemplate.cloneNode(true);
   var rooms = announcement.offer.rooms;
-  var guests = announcement.offer.rooms;
+  var guests = announcement.offer.guests;
   var guestsWordForm = (announcement.offer.guests) > 1 ? 'гостей' : 'гостя';
-  var roomsWordForm;
-  var typeOfHousing;
-  if (rooms === 1) {
-    roomsWordForm = 'комната';
-  } else if (rooms < 5) {
-    roomsWordForm = 'комнаты';
-  } else {
-    roomsWordForm = 'комнат';
-  }
-  if (announcement.offer.type === 'flat') {
-    typeOfHousing = 'Квартира';
-  } else if (announcement.offer.type === 'house') {
-    typeOfHousing = 'Дом';
-  } else {
-    typeOfHousing = 'Бунгало';
-  }
+
   cardElement.setAttribute('data-serial-number', announcement.id);
   cardElement.style.display = 'none';
   cardElement.querySelector('h3').textContent = announcement.offer.title;
-  cardElement.querySelector('h3 + p > small').textContent = announcement.offer.adress;
-  cardElement.querySelector('h4').textContent = typeOfHousing;
-  cardElement.querySelector('h4 + p').textContent = (rooms + ' ' + roomsWordForm + ' для ' + guests + ' ' + guestsWordForm);
+  cardElement.querySelector('h3 + p > small').textContent = announcement.offer.address;
+  cardElement.querySelector('h4').textContent = getTypeOfHouse(announcement.offer.type[0]);
+  cardElement.querySelector('h4 + p').textContent = (rooms + ' ' + getRoomsWordForm(rooms) + ' для ' + guests + ' ' + guestsWordForm);
   cardElement.querySelector('h4 + p + p').textContent = 'Заезд после ' + announcement.offer.checkin + ', выезд до ' + announcement.offer.checkout;
   cardElement.querySelector('.popup__price').innerHTML = (announcement.offer.price + '&#x20bd;/ночь');
   cardElement.querySelector('.popup__features').innerHTML = getListFeatures(announcement.offer.features);
