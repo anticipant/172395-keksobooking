@@ -144,9 +144,6 @@ var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore) {
     pasteTarget.appendChild(fragments);
   }
 };
-// getTemplateList(renderPins, mapPins, false);
-// getTemplateList(renderCards, map, mapFilter);
-
 var VERTICAL_SHIFT_OF_MAIN_PIN = 48;
 var isActivePage = false;
 var form = document.querySelector('.notice__form');
@@ -201,3 +198,90 @@ address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
 toggleFormStatus(true);
 mapMainPin.addEventListener('mouseup', onMainPinClick);
 
+var typeOfApartment = document.querySelector('#type');
+var timeIn = document.querySelector('#timein');
+var timeOut = document.querySelector('#timeout');
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
+var toggleMinPrice = function (evt) {
+  var value = evt.target.value;
+  var priceOfApartment = document.querySelector('#price');
+  var changeMinValue = function (number) {
+    priceOfApartment.setAttribute('min', number);
+  };
+
+  switch (value) {
+    case 'bungalo':
+      changeMinValue(0);
+      break;
+    case 'flat':
+      changeMinValue(1000);
+      break;
+    case 'house':
+      changeMinValue(5000);
+      break;
+    case 'palace':
+      changeMinValue(10000);
+      break;
+  }
+};
+var toggleTime = function (evt) {
+  var targetElement = evt.target;
+  var valueOfTarget = targetElement.value;
+
+  switch (targetElement.name) {
+    case 'timein':
+      timeOut.value = valueOfTarget;
+      break;
+    case 'timeout':
+      timeIn.value = valueOfTarget;
+      break;
+  }
+};
+var refreshDisabledOption = function (a) {
+  var countOfOption = capacity.querySelectorAll('[value]').length;
+  for (var g = 0; g < countOfOption; g++) {
+    if (g <= a && g > 0 && a !== 100) {
+      capacity.querySelector('[value="' + g + '"]').disabled = false;
+    } else if (a === 100 && g === 0) {
+      capacity.querySelector('[value="' + g + '"]').disabled = false;
+    } else {
+      capacity.querySelector('[value="' + g + '"]').disabled = true;
+    }
+  }
+};
+var togglePermitOfAvailableGuests = function (evt) {
+  var targetElement = evt.target;
+  var valueOfTarget = targetElement.value;
+
+  switch (valueOfTarget) {
+    case '1':
+      refreshDisabledOption(1);
+      break;
+    case '2':
+      refreshDisabledOption(2);
+      break;
+    case '3':
+      refreshDisabledOption(3);
+      break;
+    case '100':
+      refreshDisabledOption(100);
+      break;
+  }
+  checkingForCompliance();
+};
+var checkingForCompliance = function () {
+  var capacityOption = capacity.querySelector('[value="' + capacity.value + '"]');
+  var capacityOptionText = capacityOption.textContent;
+
+  if (capacityOption.disabled) {
+    roomNumber.setCustomValidity('Данное количество комнат не рассчитанно ' + capacityOptionText);
+  } else {
+    roomNumber.setCustomValidity('');
+  }
+};
+typeOfApartment.addEventListener('change', toggleMinPrice);
+timeIn.addEventListener('change', toggleTime);
+timeOut.addEventListener('change', toggleTime);
+roomNumber.addEventListener('change', togglePermitOfAvailableGuests);
+capacity.addEventListener('change', checkingForCompliance);
