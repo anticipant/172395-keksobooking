@@ -147,6 +147,7 @@ var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore) {
 var VERTICAL_SHIFT_OF_MAIN_PIN = 48;
 var isActivePage = false;
 var form = document.querySelector('.notice__form');
+var title = document.querySelector('#title');
 var address = document.querySelector('#address');
 var formFieldsets = form.querySelectorAll('fieldset');
 var mapMainPin = document.querySelector('.map__pin--main');
@@ -193,35 +194,39 @@ var onMainPinClick = function () {
   mapPinArray.forEach(function (item) {
     item.addEventListener('click', refreshInformation);
   });
+  addFormListeners();
 };
 address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
 toggleFormStatus(true);
-mapMainPin.addEventListener('mouseup', onMainPinClick);
 
-var typeOfApartment = document.querySelector('#type');
-var timeIn = document.querySelector('#timein');
-var timeOut = document.querySelector('#timeout');
-var roomNumber = document.querySelector('#room_number');
-var capacity = document.querySelector('#capacity');
+var MIN_PRICE_BUNGALO = 0;
+var MIN_PRICE_FLAT = 1000;
+var MIN_PRICE_HOUSE = 5000;
+var MIN_PRICE_PALACE = 10000;
+var typeOfApartment = form.querySelector('#type');
+var timeIn = form.querySelector('#timein');
+var timeOut = form.querySelector('#timeout');
+var roomNumber = form.querySelector('#room_number');
+var capacity = form.querySelector('#capacity');
+var priceOfApartment = form.querySelector('#price');
+var changeMinValue = function (number) {
+  priceOfApartment.setAttribute('min', number);
+};
 var toggleMinPrice = function (evt) {
   var value = evt.target.value;
-  var priceOfApartment = document.querySelector('#price');
-  var changeMinValue = function (number) {
-    priceOfApartment.setAttribute('min', number);
-  };
 
   switch (value) {
     case 'bungalo':
-      changeMinValue(0);
+      changeMinValue(MIN_PRICE_BUNGALO);
       break;
     case 'flat':
-      changeMinValue(1000);
+      changeMinValue(MIN_PRICE_FLAT);
       break;
     case 'house':
-      changeMinValue(5000);
+      changeMinValue(MIN_PRICE_HOUSE);
       break;
     case 'palace':
-      changeMinValue(10000);
+      changeMinValue(MIN_PRICE_PALACE);
       break;
   }
 };
@@ -238,50 +243,54 @@ var toggleTime = function (evt) {
       break;
   }
 };
-var refreshDisabledOption = function (a) {
+var refreshDisabledOption = function (roomQuantity) {
   var countOfOption = capacity.querySelectorAll('[value]').length;
+
   for (var g = 0; g < countOfOption; g++) {
-    if (g <= a && g > 0 && a !== 100) {
+    if (g <= roomQuantity && g > 0 && roomQuantity !== 100) {
       capacity.querySelector('[value="' + g + '"]').disabled = false;
-    } else if (a === 100 && g === 0) {
+    } else if (roomQuantity === 100 && g === 0) {
       capacity.querySelector('[value="' + g + '"]').disabled = false;
     } else {
       capacity.querySelector('[value="' + g + '"]').disabled = true;
     }
   }
 };
-var togglePermitOfAvailableGuests = function (evt) {
-  var targetElement = evt.target;
-  var valueOfTarget = targetElement.value;
-
-  switch (valueOfTarget) {
-    case '1':
-      refreshDisabledOption(1);
-      break;
-    case '2':
-      refreshDisabledOption(2);
-      break;
-    case '3':
-      refreshDisabledOption(3);
-      break;
-    case '100':
-      refreshDisabledOption(100);
-      break;
-  }
-  checkingForCompliance();
-};
 var checkingForCompliance = function () {
   var capacityOption = capacity.querySelector('[value="' + capacity.value + '"]');
   var capacityOptionText = capacityOption.textContent;
 
-  if (capacityOption.disabled) {
-    roomNumber.setCustomValidity('Данное количество комнат не рассчитанно ' + capacityOptionText);
-  } else {
-    roomNumber.setCustomValidity('');
+  roomNumber.setCustomValidity(capacityOption.disabled ? ('Данное количество комнат не рассчитанно ' + capacityOptionText) : '');
+};
+var togglePermitOfAvailableGuests = function (evt) {
+  var targetElement = evt.target;
+  var valueOfTarget = +targetElement.value;
+  refreshDisabledOption(valueOfTarget);
+  checkingForCompliance();
+};
+var checkValdity = function (inputElement) {
+  if (inputElement.target.validity.valid) {
+    deleteErrorBorder(inputElement.target);
   }
 };
-typeOfApartment.addEventListener('change', toggleMinPrice);
-timeIn.addEventListener('change', toggleTime);
-timeOut.addEventListener('change', toggleTime);
-roomNumber.addEventListener('change', togglePermitOfAvailableGuests);
-capacity.addEventListener('change', checkingForCompliance);
+var deleteErrorBorder = function (thisInput) {
+  thisInput.style.border = '';
+};
+var setErrorBorder = function (thisInput) {
+  thisInput.style.border = '2px solid red';
+};
+var addFormListeners = function () {
+  title.addEventListener('change', checkValdity);
+  priceOfApartment.addEventListener('change', checkValdity);
+  typeOfApartment.addEventListener('change', toggleMinPrice);
+  timeIn.addEventListener('change', toggleTime);
+  timeOut.addEventListener('change', toggleTime);
+  roomNumber.addEventListener('change', togglePermitOfAvailableGuests);
+  capacity.addEventListener('change', checkingForCompliance);
+  form.querySelectorAll('input:required').forEach(function (item) {
+    item.addEventListener('invalid', function () {
+      setErrorBorder(item);
+    });
+  });
+};
+mapMainPin.addEventListener('mouseup', onMainPinClick);
