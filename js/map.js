@@ -59,8 +59,8 @@ for (var i = 1; i <= countOfAnnouncment; i++) {
 
 var heightPin = 70;
 var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
-var mapFilter = document.querySelector('.map__filters-container');
+var mapPins = map.querySelector('.map__pins');
+var mapFilter = map.querySelector('.map__filters-container');
 var template = document.querySelector('template').content;
 var cardTemplate = template.querySelector('article.map__card');
 var pinTemplate = template.querySelector('button.map__pin');
@@ -147,12 +147,10 @@ var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore) {
 var VERTICAL_SHIFT_OF_MAIN_PIN = 48;
 var isActivePage = false;
 var form = document.querySelector('.notice__form');
-var title = document.querySelector('#title');
-var address = document.querySelector('#address');
+var address = form.querySelector('#address');
 var formFieldsets = form.querySelectorAll('fieldset');
-var mapMainPin = document.querySelector('.map__pin--main');
+var mapMainPin = map.querySelector('.map__pin--main');
 var mapPinArray;
-var mapBlock = document.querySelector('.map');
 var mainPinPosition = {
   x: 600,
   y: 375
@@ -170,7 +168,7 @@ var toggleFormStatus = function (status) {
 };
 var refreshInformation = function (evt) {
   var serialNumber = evt.currentTarget.getAttribute('data-serial-number');
-  var pinCard = document.querySelector('article[data-serial-number="' + serialNumber + '"]');
+  var pinCard = map.querySelector('article[data-serial-number="' + serialNumber + '"]');
 
   if (previousCard) {
     previousCard.style.display = 'none';
@@ -181,7 +179,7 @@ var refreshInformation = function (evt) {
 var previousCard;
 var onMainPinClick = function () {
   if (!isActivePage) {
-    mapBlock.classList.remove('map--faded');
+    map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     toggleFormStatus(false);
     isActivePage = true;
@@ -189,7 +187,7 @@ var onMainPinClick = function () {
   getPositionOfMainPin();
   getTemplateList(renderPins, mapPins, false);
   getTemplateList(renderCards, map, mapFilter);
-  mapPinArray = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  mapPinArray = map.querySelectorAll('.map__pin:not(.map__pin--main)');
   address.value = mainPinPosition.x + ', ' + (mainPinPosition.y + VERTICAL_SHIFT_OF_MAIN_PIN);
   mapPinArray.forEach(function (item) {
     item.addEventListener('click', refreshInformation);
@@ -203,7 +201,6 @@ var MIN_PRICE_BUNGALO = 0;
 var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
 var MIN_PRICE_PALACE = 10000;
-var typeOfApartment = form.querySelector('#type');
 var timeIn = form.querySelector('#timein');
 var timeOut = form.querySelector('#timeout');
 var roomNumber = form.querySelector('#room_number');
@@ -280,17 +277,26 @@ var setErrorBorder = function (thisInput) {
   thisInput.style.border = '2px solid red';
 };
 var addFormListeners = function () {
-  title.addEventListener('change', checkValdity);
-  priceOfApartment.addEventListener('change', checkValdity);
-  typeOfApartment.addEventListener('change', toggleMinPrice);
-  timeIn.addEventListener('change', toggleTime);
-  timeOut.addEventListener('change', toggleTime);
-  roomNumber.addEventListener('change', togglePermitOfAvailableGuests);
-  capacity.addEventListener('change', checkingForCompliance);
+  document.addEventListener('change', function (evt) {
+    var idCompare = evt.target.getAttribute('id');
+
+    if (idCompare === 'title' || idCompare === 'price') {
+      checkValdity(evt);
+    } else if (idCompare === 'type') {
+      toggleMinPrice(evt);
+    } else if (idCompare === 'timein' || idCompare === 'timeout') {
+      toggleTime(evt);
+    } else if (idCompare === 'room_number') {
+      togglePermitOfAvailableGuests(evt);
+    } else if (idCompare === 'capacity') {
+      checkingForCompliance(evt);
+    }
+  });
   form.querySelectorAll('input:required').forEach(function (item) {
     item.addEventListener('invalid', function () {
       setErrorBorder(item);
     });
   });
 };
+
 mapMainPin.addEventListener('mouseup', onMainPinClick);
