@@ -7,7 +7,7 @@
   var announcementCheckinCheckoutValues = ['12:00', '13:00', '14:00'];
   var announcementFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var announcementPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-  var announcements = [];
+  window.data = [];
   var getAnnouncementTitle = function () {
     var valueForDelete = window.util.getRandomInt(0, announcementTitles.length - 1);
     var titleValue = announcementTitles[valueForDelete];
@@ -21,7 +21,7 @@
     var locationXCoords = window.util.getRandomInt(300, 900);
     var locationYCoords = window.util.getRandomInt(150, 500);
 
-    announcements.push({
+    window.data.push({
       'id': i,
       'author': {
         'avatar': 'img/avatars/user0' + i + '.png'
@@ -45,5 +45,4 @@
       }
     });
   }
-  window.data = announcements;
 })();
