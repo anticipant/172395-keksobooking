@@ -59,8 +59,8 @@ for (var i = 1; i <= countOfAnnouncment; i++) {
 
 var heightPin = 70;
 var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
-var mapFilter = document.querySelector('.map__filters-container');
+var mapPins = map.querySelector('.map__pins');
+var mapFilter = map.querySelector('.map__filters-container');
 var template = document.querySelector('template').content;
 var cardTemplate = template.querySelector('article.map__card');
 var pinTemplate = template.querySelector('button.map__pin');
@@ -144,17 +144,13 @@ var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore) {
     pasteTarget.appendChild(fragments);
   }
 };
-// getTemplateList(renderPins, mapPins, false);
-// getTemplateList(renderCards, map, mapFilter);
-
 var VERTICAL_SHIFT_OF_MAIN_PIN = 48;
 var isActivePage = false;
 var form = document.querySelector('.notice__form');
-var address = document.querySelector('#address');
+var address = form.querySelector('#address');
 var formFieldsets = form.querySelectorAll('fieldset');
-var mapMainPin = document.querySelector('.map__pin--main');
+var mapMainPin = map.querySelector('.map__pin--main');
 var mapPinArray;
-var mapBlock = document.querySelector('.map');
 var mainPinPosition = {
   x: 600,
   y: 375
@@ -172,7 +168,7 @@ var toggleFormStatus = function (status) {
 };
 var refreshInformation = function (evt) {
   var serialNumber = evt.currentTarget.getAttribute('data-serial-number');
-  var pinCard = document.querySelector('article[data-serial-number="' + serialNumber + '"]');
+  var pinCard = map.querySelector('article[data-serial-number="' + serialNumber + '"]');
 
   if (previousCard) {
     previousCard.style.display = 'none';
@@ -183,7 +179,7 @@ var refreshInformation = function (evt) {
 var previousCard;
 var onMainPinClick = function () {
   if (!isActivePage) {
-    mapBlock.classList.remove('map--faded');
+    map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     toggleFormStatus(false);
     isActivePage = true;
@@ -191,13 +187,115 @@ var onMainPinClick = function () {
   getPositionOfMainPin();
   getTemplateList(renderPins, mapPins, false);
   getTemplateList(renderCards, map, mapFilter);
-  mapPinArray = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  mapPinArray = map.querySelectorAll('.map__pin:not(.map__pin--main)');
   address.value = mainPinPosition.x + ', ' + (mainPinPosition.y + VERTICAL_SHIFT_OF_MAIN_PIN);
   mapPinArray.forEach(function (item) {
     item.addEventListener('click', refreshInformation);
   });
+  addFormListeners();
 };
 address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
 toggleFormStatus(true);
-mapMainPin.addEventListener('mouseup', onMainPinClick);
 
+var MIN_PRICE_BUNGALO = 0;
+var MIN_PRICE_FLAT = 1000;
+var MIN_PRICE_HOUSE = 5000;
+var MIN_PRICE_PALACE = 10000;
+var timeIn = form.querySelector('#timein');
+var timeOut = form.querySelector('#timeout');
+var roomNumber = form.querySelector('#room_number');
+var capacity = form.querySelector('#capacity');
+var priceOfApartment = form.querySelector('#price');
+var changeMinValue = function (number) {
+  priceOfApartment.setAttribute('min', number);
+};
+var toggleMinPrice = function (evt) {
+  var value = evt.target.value;
+
+  switch (value) {
+    case 'bungalo':
+      changeMinValue(MIN_PRICE_BUNGALO);
+      break;
+    case 'flat':
+      changeMinValue(MIN_PRICE_FLAT);
+      break;
+    case 'house':
+      changeMinValue(MIN_PRICE_HOUSE);
+      break;
+    case 'palace':
+      changeMinValue(MIN_PRICE_PALACE);
+      break;
+  }
+};
+var toggleTime = function (evt) {
+  var targetElement = evt.target;
+  var valueOfTarget = targetElement.value;
+
+  switch (targetElement.name) {
+    case 'timein':
+      timeOut.value = valueOfTarget;
+      break;
+    case 'timeout':
+      timeIn.value = valueOfTarget;
+      break;
+  }
+};
+var refreshDisabledOption = function (roomQuantity) {
+  var countOfOption = capacity.querySelectorAll('[value]').length;
+
+  for (var g = 0; g < countOfOption; g++) {
+    if (g <= roomQuantity && g > 0 && roomQuantity !== 100) {
+      capacity.querySelector('[value="' + g + '"]').disabled = false;
+    } else if (roomQuantity === 100 && g === 0) {
+      capacity.querySelector('[value="' + g + '"]').disabled = false;
+    } else {
+      capacity.querySelector('[value="' + g + '"]').disabled = true;
+    }
+  }
+};
+var checkingForCompliance = function () {
+  var capacityOption = capacity.querySelector('[value="' + capacity.value + '"]');
+  var capacityOptionText = capacityOption.textContent;
+
+  roomNumber.setCustomValidity(capacityOption.disabled ? ('Данное количество комнат не рассчитанно ' + capacityOptionText) : '');
+};
+var togglePermitOfAvailableGuests = function (evt) {
+  var targetElement = evt.target;
+  var valueOfTarget = +targetElement.value;
+  refreshDisabledOption(valueOfTarget);
+  checkingForCompliance();
+};
+var checkValdity = function (inputElement) {
+  setErrorBorder(inputElement.target, !inputElement.target.validity.valid);
+};
+var setErrorBorder = function (thisInput, isNeed) {
+  if (isNeed) {
+    thisInput.style.border = '2px solid red';
+  } else {
+    thisInput.style.border = '';
+  }
+};
+var addFormListeners = function () {
+  document.addEventListener('change', function (evt) {
+    var idCompare = evt.target.getAttribute('id');
+
+    if (idCompare === 'title' || idCompare === 'price') {
+      checkValdity(evt);
+    } else if (idCompare === 'type') {
+      toggleMinPrice(evt);
+    } else if (idCompare === 'timein' || idCompare === 'timeout') {
+      toggleTime(evt);
+    } else if (idCompare === 'room_number') {
+      togglePermitOfAvailableGuests(evt);
+    } else if (idCompare === 'capacity') {
+      checkingForCompliance(evt);
+    }
+  });
+  form.querySelectorAll('input:required').forEach(function (item) {
+    item.addEventListener('invalid', function () {
+      setErrorBorder(item, true);
+    });
+  });
+};
+
+mapMainPin.addEventListener('mouseup', onMainPinClick);
