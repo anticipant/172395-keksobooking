@@ -266,15 +266,20 @@ var togglePermitOfAvailableGuests = function (evt) {
   checkingForCompliance();
 };
 var checkValdity = function (inputElement) {
-  if (inputElement.target.validity.valid) {
-    deleteErrorBorder(inputElement.target);
+//  if (inputElement.target.validity.valid) {
+//    deleteErrorBorder(inputElement.target);
+//  }
+  setErrorBorder(inputElement.target, !inputElement.target.validity.valid);
+};
+//var deleteErrorBorder = function (thisInput) {
+//  thisInput.style.border = '';
+//};
+var setErrorBorder = function (thisInput, isNeed) {
+  if (isNeed) {
+    thisInput.style.border = '2px solid red';
+  } else {
+    thisInput.style.border = '';
   }
-};
-var deleteErrorBorder = function (thisInput) {
-  thisInput.style.border = '';
-};
-var setErrorBorder = function (thisInput) {
-  thisInput.style.border = '2px solid red';
 };
 var addFormListeners = function () {
   document.addEventListener('change', function (evt) {
@@ -294,7 +299,7 @@ var addFormListeners = function () {
   });
   form.querySelectorAll('input:required').forEach(function (item) {
     item.addEventListener('invalid', function () {
-      setErrorBorder(item);
+      setErrorBorder(item, true);
     });
   });
 };
