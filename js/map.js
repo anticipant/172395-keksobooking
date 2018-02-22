@@ -266,14 +266,8 @@ var togglePermitOfAvailableGuests = function (evt) {
   checkingForCompliance();
 };
 var checkValdity = function (inputElement) {
-//  if (inputElement.target.validity.valid) {
-//    deleteErrorBorder(inputElement.target);
-//  }
   setErrorBorder(inputElement.target, !inputElement.target.validity.valid);
 };
-//var deleteErrorBorder = function (thisInput) {
-//  thisInput.style.border = '';
-//};
 var setErrorBorder = function (thisInput, isNeed) {
   if (isNeed) {
     thisInput.style.border = '2px solid red';
