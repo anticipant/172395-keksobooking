@@ -30,6 +30,7 @@
   };
   var getTypeOfHouse = function (type) {
     var typeOfHousing;
+
     switch (type) {
       case 'flat':
         typeOfHousing = 'Квартира';

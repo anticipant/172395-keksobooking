@@ -30,6 +30,6 @@
     });
     window.form.addFormListeners();
   };
+  window.map.mapMainPin.addEventListener('mousedown', window.map.onMouseDown);
   window.map.mapMainPin.addEventListener('mouseup', onMainPinClick);
-
 })();

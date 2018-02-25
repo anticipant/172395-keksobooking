@@ -16,7 +16,6 @@
     return titleValue;
   };
 
-
   for (var i = 1; i <= countOfAnnouncment; i++) {
     var locationXCoords = window.util.getRandomInt(300, 900);
     var locationYCoords = window.util.getRandomInt(150, 500);
