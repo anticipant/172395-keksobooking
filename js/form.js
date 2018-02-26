@@ -131,4 +131,15 @@
     fillAddressInput: fillAddressInput,
     addFormListeners: addFormListeners
   };
+  var onError = function (message) {
+    console.error(message);
+  };
+
+  var onLoad = function (data) {
+    console.log(data);
+  };
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), onLoad, onError);
+    evt.preventDefault();
+  });
 })();

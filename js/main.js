@@ -22,8 +22,8 @@
       isActivePage = true;
     }
     window.map.getPositionOfMainPin();
-    getTemplateList(window.renderPins, window.map.mapPins, false);
-    getTemplateList(window.renderCards, map, window.map.mapFilter);
+    getTemplateList(window.renderPins, window.map.mapPins, false); // обновить после xhr
+    getTemplateList(window.renderCards, map, window.map.mapFilter); // обновить после xhr
     window.form.fillAddressInput(true);
     window.map.getMapPinArray().forEach(function (item) {
       item.addEventListener('click', window.map.refreshInformation);
