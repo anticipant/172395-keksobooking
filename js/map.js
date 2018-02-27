@@ -3,11 +3,19 @@
 (function () {
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 80;
+  var isActivePage = false;
   var map = document.querySelector('.map');
   var dragAndDropArea = map.querySelector('.map__pinsoverlay');
   var mapPins = map.querySelector('.map__pins');
   var mapFilter = map.querySelector('.map__filters-container');
   var mapMainPin = map.querySelector('.map__pin--main');
+  var onCloseButton = function () {
+    var closePopupButton = map.querySelector('.popup__close');
+    var articleCard = map.querySelector('.map__card');
+    closePopupButton.addEventListener('click', function () {
+      articleCard.style.display = 'none';
+    });
+  };
   var getMapPinArray = function () {
     return map.querySelectorAll('.map__pin:not(.map__pin--main)');
   };
@@ -47,19 +55,19 @@
     mainPinPosition.x = positionX;
     mainPinPosition.y = positionY;
   };
-  var previousCard;
-  var refreshInformation = function (evt) {
-    var serialNumber = evt.currentTarget.getAttribute('data-serial-number');
-    var pinCard = map.querySelector('article[data-serial-number="' + serialNumber + '"]');
-
-    if (previousCard) {
-      previousCard.style.display = 'none';
+  var mapActivate = function (isActivate) {
+    if (isActivate) {
+      map.classList.remove('map--faded');
+    } else {
+      window.map.isActivePage = false;
+      map.classList.add('map--faded');
     }
-    pinCard.style.display = 'block';
-    previousCard = pinCard;
   };
-  var mapActivate = function () {
-    map.classList.remove('map--faded');
+  var clearMap = function () {
+    var elementsForRemove = getMapPinArray();
+    elementsForRemove.forEach(function (item) {
+      item.remove();
+    });
   };
   var onMouseDown = function (evt) {
     var startCoords = {
@@ -91,6 +99,9 @@
     document.addEventListener('mouseup', onMouseUp);
   };
   window.map = {
+    onCloseButton: onCloseButton,
+    isActivePage: isActivePage,
+    clearMap: clearMap,
     getMapPinArray: getMapPinArray,
     mapBlock: map,
     mapMainPin: mapMainPin,
@@ -98,7 +109,6 @@
     mapFilter: mapFilter,
     getPositionOfMainPin: getPositionOfMainPin,
     mainPinPosition: mainPinPosition,
-    refreshInformation: refreshInformation,
     mapActivate: mapActivate,
     onMouseDown: onMouseDown
   };

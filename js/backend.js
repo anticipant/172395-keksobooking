@@ -3,7 +3,7 @@
 (function () {
   //  экспортировать как объект
   window.upload = function (data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/keksobooking/data';
+    var URL = 'https://js.dump.academy/keksobooking';
     var xhr = new XMLHttpRequest();
 
     xhr.responseType = 'json';
