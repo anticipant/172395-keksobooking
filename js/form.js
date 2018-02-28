@@ -134,17 +134,17 @@
       });
     });
   };
+
   window.form = {
     formActivate: formActivate,
     fillAddressInput: fillAddressInput,
     addFormListeners: addFormListeners
   };
   var onError = function (message) {
-    console.error(message);
+    window.errorMessage(message);
   };
 
   var onLoad = function () {
-    console.log(data);
     window.map.clearMap();
     window.map.mapActivate(false);
     resetForm();
@@ -152,7 +152,7 @@
     fillAddressInput();
   };
   form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), onLoad, onError);
+    window.load('POST', 'https://js.dump.academy/keksobooking1', onLoad, onError, new FormData(form));
     evt.preventDefault();
   });
 })();
