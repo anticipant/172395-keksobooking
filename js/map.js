@@ -1,10 +1,11 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
   var DEFAULT_PIN_X_COORD = 600;
   var DEFAULT_PIN_Y_COORD = 375;
   var MAX_TOP_VALUE = 100;
-  var MAX_BOTTOM_VALUE = 100;
+  var MAX_BOTTOM_VALUE = 700;
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 80;
   var isActivePage = false;
@@ -14,11 +15,19 @@
   var mapPins = map.querySelector('.map__pins');
   var mapFilter = map.querySelector('.map__filters-container');
   var mapMainPin = map.querySelector('.map__pin--main');
+  var closePopup = function (articleCard) {
+    articleCard.style.display = 'none';
+  };
   var onCloseButton = function () {
     var closePopupButton = map.querySelector('.popup__close');
     var articleCard = map.querySelector('.map__card');
     closePopupButton.addEventListener('click', function () {
-      articleCard.style.display = 'none';
+      closePopup(articleCard);
+    });
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        closePopup(articleCard);
+      }
     });
   };
   var getMapPinArray = function () {
@@ -30,9 +39,9 @@
     var regulationValueY = (mapMainPin.getBoundingClientRect().top + pageYOffset) - currentPositionY;
     extremePosition = {
       minX: dragAndDropArea.getBoundingClientRect().left - regulationValueX,
-      minY: 100 - regulationValueY,
+      minY: MAX_TOP_VALUE - regulationValueY,
       maxX: dragAndDropArea.getBoundingClientRect().right - regulationValueX - MAIN_PIN_WIDTH,
-      maxY: 700 - regulationValueY - MAIN_PIN_HEIGHT
+      maxY: MAX_BOTTOM_VALUE - regulationValueY - MAIN_PIN_HEIGHT
     };
   };
   var extremePosition = {

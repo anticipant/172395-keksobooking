@@ -51,7 +51,6 @@
     var guests = announcement.offer.guests;
     var guestsWordForm = (announcement.offer.guests) > 1 ? 'гостей' : 'гостя';
 
-    cardElement.style.display = 'block';
     cardElement.querySelector('h3').textContent = announcement.offer.title;
     cardElement.querySelector('h3 + p > small').textContent = announcement.offer.address;
     cardElement.querySelector('h4').textContent = getTypeOfHouse(announcement.offer.type[0]);
