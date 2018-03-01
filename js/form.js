@@ -22,11 +22,19 @@
       address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
     }
   };
-
+  var resetForm = function () {
+    form.reset();
+  };
   fillAddressInput();
   toggleFormDisabledStatus(true);
-  var formActivate = function () {
-    form.classList.remove('notice__form--disabled');
+  var formActivate = function (isActive) {
+    if (isActive) {
+      form.classList.remove('notice__form--disabled');
+      toggleFormDisabledStatus(false);
+    } else {
+      form.classList.add('notice__form--disabled');
+      toggleFormDisabledStatus(true);
+    }
     toggleFormDisabledStatus(false);
   };
   var timeIn = form.querySelector('#timein');
@@ -126,9 +134,25 @@
       });
     });
   };
+
   window.form = {
     formActivate: formActivate,
     fillAddressInput: fillAddressInput,
     addFormListeners: addFormListeners
   };
+  var onError = function (message) {
+    window.errorMessage(message);
+  };
+
+  var onLoad = function () {
+    window.map.clearMap();
+    window.map.mapActivate(false);
+    resetForm();
+    formActivate(false);
+    fillAddressInput();
+  };
+  form.addEventListener('submit', function (evt) {
+    window.load('POST', 'https://js.dump.academy/keksobooking', onLoad, onError, new FormData(form));
+    evt.preventDefault();
+  });
 })();
