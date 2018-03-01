@@ -152,7 +152,7 @@
     fillAddressInput();
   };
   form.addEventListener('submit', function (evt) {
-    window.load('POST', 'https://js.dump.academy/keksobooking1', onLoad, onError, new FormData(form));
+    window.load('POST', 'https://js.dump.academy/keksobooking', onLoad, onError, new FormData(form));
     evt.preventDefault();
   });
 })();

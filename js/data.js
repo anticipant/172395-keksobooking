@@ -2,6 +2,7 @@
 
 (function () {
   var onError = function (message) {
+    window.map.isActivePage = true;
     window.errorMessage(message);
   };
   var onLoad = function (data) {

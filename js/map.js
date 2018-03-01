@@ -1,9 +1,14 @@
 'use strict';
 
 (function () {
+  var DEFAULT_PIN_X_COORD = 600;
+  var DEFAULT_PIN_Y_COORD = 375;
+  var MAX_TOP_VALUE = 100;
+  var MAX_BOTTOM_VALUE = 100;
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 80;
   var isActivePage = false;
+  var isCardRender = false;
   var map = document.querySelector('.map');
   var dragAndDropArea = map.querySelector('.map__pinsoverlay');
   var mapPins = map.querySelector('.map__pins');
@@ -32,9 +37,9 @@
   };
   var extremePosition = {
     minX: dragAndDropArea.getBoundingClientRect().left,
-    minY: 100,
+    minY: MAX_TOP_VALUE,
     maxX: dragAndDropArea.getBoundingClientRect().right - MAIN_PIN_WIDTH,
-    maxY: 700
+    maxY: MAX_BOTTOM_VALUE
   };
   var getAllowedCoordinate = function (min, max, thisCoordinate) {
     if (thisCoordinate < min) {
@@ -46,8 +51,8 @@
     }
   };
   var mainPinPosition = {
-    x: 600,
-    y: 375
+    x: DEFAULT_PIN_X_COORD,
+    y: DEFAULT_PIN_Y_COORD
   };
   var getPositionOfMainPin = function () {
     var positionX = mapMainPin.offsetLeft;
@@ -68,6 +73,7 @@
     elementsForRemove.forEach(function (item) {
       item.remove();
     });
+    map.querySelector('.map__card').remove();
   };
   var onMouseDown = function (evt) {
     var startCoords = {
@@ -100,6 +106,7 @@
   };
   window.map = {
     onCloseButton: onCloseButton,
+    isCardRender: isCardRender,
     isActivePage: isActivePage,
     clearMap: clearMap,
     getMapPinArray: getMapPinArray,
