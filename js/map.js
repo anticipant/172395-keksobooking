@@ -77,12 +77,17 @@
       map.classList.add('map--faded');
     }
   };
-  var clearMap = function () {
+  var clearMap = function (hidden) {
+    var card = map.querySelector('.map__card');
     var elementsForRemove = getMapPinArray();
     elementsForRemove.forEach(function (item) {
       item.remove();
     });
-    map.querySelector('.map__card').remove();
+    if (hidden) {
+      card.style.display = 'none';
+    } else if (card) {
+      card.remove();
+    }
   };
   var onMouseDown = function (evt) {
     var startCoords = {

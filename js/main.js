@@ -30,19 +30,32 @@
       window.form.formActivate(true);
       window.map.isActivePage = true;
       window.map.getPositionOfMainPin();
-      getTemplateList(window.renderPins, window.map.mapPins, false); // обновить после xhr
+      getTemplateList(window.renderPins, window.map.mapPins, false);
       window.form.fillAddressInput(true);
-      window.map.getMapPinArray().forEach(function (item) {
+      document.addEventListener('click', function (evt) {
+        var serialNumber;
 
-        item.addEventListener('click', function (evt) {
-          var serialNumber = evt.currentTarget.getAttribute('data-serial-number');
-          // window.renderCards.refresh(window.data, serialNumber);
+        if (evt.target.hasAttribute('data-serial-number')) {
+          serialNumber = evt.target.getAttribute('data-serial-number');
           showCard(serialNumber);
-        });
+        } else if (evt.target.parentElement.hasAttribute('data-serial-number')) {
+          serialNumber = evt.target.parentElement.getAttribute('data-serial-number');
+          showCard(serialNumber);
+        }
       });
       window.form.addFormListeners();
     }
   };
   window.map.mapMainPin.addEventListener('mousedown', window.map.onMouseDown);
   window.map.mapMainPin.addEventListener('mouseup', onMainPinClick);
+
+  // document.addEventListener('change', function( evt) {
+  //   if (evt.target.classList.contains('map__filter') || evt.target.parentElement.classList.contains('map__filter-set')) {
+  //     var boom = window.data.filter(function (ann) {
+  //       return window.updateFilteredAds(ann);
+  //     });
+  //     window.map.clearMap();
+  //     getTemplateList(window.renderPins, window.map.mapPins, false); // обновить после xhr
+  //   }
+  // });
 })();
