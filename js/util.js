@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+  var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var getRandomInt = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -17,6 +19,8 @@
     return resultArr;
   };
   window.util = {
+    UPLOAD_URL: UPLOAD_URL,
+    LOAD_URL: LOAD_URL,
     getRandomInt: getRandomInt,
     getRandomElement: getRandomElement
   };

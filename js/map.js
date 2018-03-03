@@ -59,6 +59,10 @@
       return thisCoordinate;
     }
   };
+  var mainPinDafaultPosition = {
+    x: DEFAULT_PIN_X_COORD,
+    y: DEFAULT_PIN_Y_COORD
+  };
   var mainPinPosition = {
     x: DEFAULT_PIN_X_COORD,
     y: DEFAULT_PIN_Y_COORD
@@ -68,6 +72,10 @@
     var positionY = mapMainPin.offsetTop;
     mainPinPosition.x = positionX;
     mainPinPosition.y = positionY;
+  };
+  var setDefaultPositionOfMainPin = function () {
+    mapMainPin.style.top = (mainPinDafaultPosition.y) + 'px';
+    mapMainPin.style.left = (mainPinDafaultPosition.x) + 'px';
   };
   var mapActivate = function (isActivate) {
     if (isActivate) {
@@ -83,10 +91,11 @@
     elementsForRemove.forEach(function (item) {
       item.remove();
     });
-    if (hidden) {
+    if (hidden && card) {
       card.style.display = 'none';
     } else if (card) {
       card.remove();
+      window.map.isCardRender = false;
     }
   };
   var onMouseDown = function (evt) {
@@ -106,7 +115,7 @@
         x: getAllowedCoordinate(extremePosition.minX, extremePosition.maxX, moveEvt.pageX),
         y: getAllowedCoordinate(extremePosition.minY, extremePosition.maxY, moveEvt.pageY)
       };
-      window.form.fillAddressInput(true);
+      window.form.fillAddressInput(false, true);
       mapMainPin.style.top = (mapMainPin.offsetTop - shift.y) + 'px';
       mapMainPin.style.left = (mapMainPin.offsetLeft - shift.x) + 'px';
     };
@@ -130,6 +139,8 @@
     mapFilter: mapFilter,
     getPositionOfMainPin: getPositionOfMainPin,
     mainPinPosition: mainPinPosition,
+    mainPinDafaultPosition: mainPinDafaultPosition,
+    setDefaultPositionOfMainPin: setDefaultPositionOfMainPin,
     mapActivate: mapActivate,
     onMouseDown: onMouseDown
   };

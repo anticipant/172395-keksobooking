@@ -11,5 +11,5 @@
     }
     window.data = data;
   };
-  window.load('GET', 'https://js.dump.academy/keksobooking/data', onLoad, onError);
+  window.load('GET', window.util.LOAD_URL, onLoad, onError);
 })();

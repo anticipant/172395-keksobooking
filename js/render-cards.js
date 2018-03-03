@@ -21,13 +21,20 @@
     return listPhotos;
   };
   var getRoomsWordForm = function (countOfRooms) {
-    if (countOfRooms === 1) {
-      return 'комната';
-    } else if (countOfRooms < 5) {
-      return 'комнаты';
-    } else {
-      return 'комнат';
+    var wordForm;
+    switch (countOfRooms) {
+      case 1:
+        wordForm = 'комната';
+        break;
+      case 2:
+      case 3:
+      case 4:
+        wordForm = 'комнаты';
+        break;
+      default:
+        wordForm = 'комнат';
     }
+    return wordForm;
   };
   var getTypeOfHouse = function (type) {
     var typeOfHousing;
