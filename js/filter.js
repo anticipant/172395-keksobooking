@@ -55,13 +55,14 @@
       });
     }
   };
-  var showFilteredPins = function (renderFunction, pasteTarget, data, quantity) {
-    var fragments = document.createDocumentFragment();
-
-    for (var t = 0; t < quantity; t++) {
-      fragments.appendChild(renderFunction(data[t]));
-    }
-    pasteTarget.appendChild(fragments);
+  var filteredArray = function () {
+    return window.data.filter(function (announcementNumber) {
+      return getFilterResult(announcementNumber, 'housing-type') &&
+        getFilterResult(announcementNumber, 'housing-rooms') &&
+        getFilterResult(announcementNumber, 'housing-guests') &&
+        priceFilterResult(announcementNumber) &&
+        featuresFilterResult(announcementNumber);
+    });
   };
   var updateFilteredAds = function (evt) {
     if (evt.target.classList.contains('map__filter') || evt.target.parentElement.classList.contains('map__filter-set')) {
@@ -71,20 +72,14 @@
       }
       lastTimeout = window.setTimeout(function () {
         var countOfAnnouncments; // верно ли я сделал изменив название на мн.ч.
-        var filteredData = window.data.filter(function (announcementNumber) {
-          return getFilterResult(announcementNumber, 'housing-type') &&
-            getFilterResult(announcementNumber, 'housing-rooms') &&
-            getFilterResult(announcementNumber, 'housing-guests') &&
-            priceFilterResult(announcementNumber) &&
-            featuresFilterResult(announcementNumber);
-        });
+        var filteredData = filteredArray();
         window.map.clearMap(true);
         if (filteredData.length <= MAX_FILTERED_ANNOUNCMENT) {
           countOfAnnouncments = filteredData.length;
         } else {
           countOfAnnouncments = MAX_FILTERED_ANNOUNCMENT;
         }
-        showFilteredPins(window.renderPins, window.map.mapPins, filteredData, countOfAnnouncments);
+        window.util.showFilteredPins(window.renderPins, window.map.mapPins, filteredData, countOfAnnouncments);
       }, DEBOUNCE_INTERVAL);
     }
   };
