@@ -7,7 +7,9 @@
   var MIN_PRICE_HOUSE = 5000;
   var MIN_PRICE_PALACE = 10000;
   var mainPinPosition = window.map.mainPinPosition;
+  var mainPinDafaultPosition = window.map.mainPinDafaultPosition;
   var form = document.querySelector('.notice__form');
+  var resetButtom = form.querySelector('.form__reset');
   var address = form.querySelector('#address');
   var formFieldsets = form.querySelectorAll('fieldset');
   var toggleFormDisabledStatus = function (status) {
@@ -15,11 +17,21 @@
       item.disabled = status;
     });
   };
-  var fillAddressInput = function (withShift) {
-    if (withShift) {
-      address.value = mainPinPosition.x + ', ' + (mainPinPosition.y + VERTICAL_SHIFT_OF_MAIN_PIN);
+  var fillAddressInput = function (isDefault, withShift) {
+    var coordX;
+    var coordY;
+
+    if (isDefault) {
+      coordX = mainPinDafaultPosition.x;
+      coordY = mainPinDafaultPosition.y;
     } else {
-      address.value = mainPinPosition.x + ', ' + mainPinPosition.y;
+      coordX = mainPinPosition.x;
+      coordY = mainPinPosition.y;
+    }
+    if (withShift) {
+      address.value = coordX + ', ' + (coordY + VERTICAL_SHIFT_OF_MAIN_PIN);
+    } else {
+      address.value = coordX + ', ' + coordY;
     }
   };
   var resetForm = function () {
@@ -35,7 +47,6 @@
       form.classList.add('notice__form--disabled');
       toggleFormDisabledStatus(true);
     }
-    toggleFormDisabledStatus(false);
   };
   var timeIn = form.querySelector('#timein');
   var timeOut = form.querySelector('#timeout');
@@ -77,9 +88,9 @@
     }
   };
   var refreshDisabledOption = function (roomQuantity) {
-    var countOfOption = capacity.querySelectorAll('[value]').length;
+    var countOfOptions = capacity.querySelectorAll('[value]').length;
 
-    for (var g = 0; g < countOfOption; g++) {
+    for (var g = 0; g < countOfOptions; g++) {
       if (g <= roomQuantity && g > 0 && roomQuantity !== 100) {
         capacity.querySelector('[value="' + g + '"]').disabled = false;
       } else if (roomQuantity === 100 && g === 0) {
@@ -89,7 +100,7 @@
       }
     }
   };
-  var checkingForCompliance = function () {
+  var setValidityMessage = function () {
     var capacityOption = capacity.querySelector('[value="' + capacity.value + '"]');
     var capacityOptionText = capacityOption.textContent;
 
@@ -100,7 +111,7 @@
     var valueOfTarget = +targetElement.value;
 
     refreshDisabledOption(valueOfTarget);
-    checkingForCompliance();
+    setValidityMessage();
   };
   var setErrorBorder = function (thisInput, isNeed) {
     if (isNeed) {
@@ -112,20 +123,41 @@
   var checkValdity = function (inputElement) {
     setErrorBorder(inputElement.target, !inputElement.target.validity.valid);
   };
+  var resetPage = function () {
+    window.map.clearMap();
+    window.map.mapActivate(false);
+    window.filter.resetFilter();
+    resetForm();
+    formActivate(false);
+    fillAddressInput(true, false);
+    window.map.setDefaultPositionOfMainPin();
+    window.map.mapBlock.removeEventListener('click', window.map.onPinClick);
+    form.removeEventListener('submit', onSubmitForm);
+    resetButtom.removeEventListener('click', resetPage);
+    window.filter.filterBlock.removeEventListener('change', window.filter.updateFilteredAds);
+  };
   var addFormListeners = function () {
-    document.addEventListener('change', function (evt) {
+    form.addEventListener('change', function (evt) {
       var idCompare = evt.target.getAttribute('id');
 
-      if (idCompare === 'title' || idCompare === 'price') {
-        checkValdity(evt);
-      } else if (idCompare === 'type') {
-        toggleMinPrice(evt);
-      } else if (idCompare === 'timein' || idCompare === 'timeout') {
-        toggleTime(evt);
-      } else if (idCompare === 'room_number') {
-        togglePermitOfAvailableGuests(evt);
-      } else if (idCompare === 'capacity') {
-        checkingForCompliance(evt);
+      switch (idCompare) {
+        case 'title':
+        case 'price':
+          checkValdity(evt);
+          break;
+        case 'type':
+          toggleMinPrice(evt);
+          break;
+        case 'timein':
+        case 'timeout':
+          toggleTime(evt);
+          break;
+        case 'room_number':
+          togglePermitOfAvailableGuests(evt);
+          break;
+        case 'capacity':
+          setValidityMessage();
+          break;
       }
     });
     form.querySelectorAll('input:required').forEach(function (item) {
@@ -134,25 +166,23 @@
       });
     });
   };
-
+  var onError = function (message) {
+    window.errorMessage(message);
+  };
+  var onLoad = function () {
+    resetPage();
+  };
+  var onSubmitForm = function (evt) {
+    window.load('POST', window.util.UPLOAD_URL, onLoad, onError, new FormData(form));
+    evt.preventDefault();
+  };
   window.form = {
+    resetButtom: resetButtom,
+    formBlock: form,
+    resetPage: resetPage,
+    onSubmitForm: onSubmitForm,
     formActivate: formActivate,
     fillAddressInput: fillAddressInput,
     addFormListeners: addFormListeners
   };
-  var onError = function (message) {
-    window.errorMessage(message);
-  };
-
-  var onLoad = function () {
-    window.map.clearMap();
-    window.map.mapActivate(false);
-    resetForm();
-    formActivate(false);
-    fillAddressInput();
-  };
-  form.addEventListener('submit', function (evt) {
-    window.load('POST', 'https://js.dump.academy/keksobooking', onLoad, onError, new FormData(form));
-    evt.preventDefault();
-  });
 })();

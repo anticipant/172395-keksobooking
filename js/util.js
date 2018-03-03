@@ -1,23 +1,35 @@
 'use strict';
 
 (function () {
-  var getRandomInt = function (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-  var compareRandom = function () {
-    return Math.random() - 0.5;
-  };
-  var getRandomElement = function (arr, quantity) {
-    var sortedArr = arr.sort(compareRandom);
-    var resultArr = [];
+  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+  var LOAD_URL = 'https://js.dump.academy/keksobooking/data';
+  var MAX_ANNOUNCMENT = 5;
+  var showFilteredPins = function (renderFunction, pasteTarget, data, quantity) {
+    var fragments = document.createDocumentFragment();
 
-    for (var k = 0; k < quantity; k++) {
-      resultArr.push(sortedArr[k]);
+    for (var t = 0; t < quantity; t++) {
+      fragments.appendChild(renderFunction(data[t]));
     }
-    return resultArr;
+    pasteTarget.appendChild(fragments);
+  };
+  var getTemplateList = function (renderFunction, pasteTarget, isInsertBefore, index) {
+    var fragment = document.createDocumentFragment();
+
+    if (isInsertBefore) {
+      fragment.appendChild(renderFunction(window.data[index]));
+      pasteTarget.insertBefore(fragment, isInsertBefore);
+      window.map.onCloseButton();
+    } else {
+      for (var t = 0; t < MAX_ANNOUNCMENT; t++) {
+        fragment.appendChild(renderFunction(window.data[t]));
+      }
+      pasteTarget.appendChild(fragment);
+    }
   };
   window.util = {
-    getRandomInt: getRandomInt,
-    getRandomElement: getRandomElement
+    showFilteredPins: showFilteredPins,
+    getTemplateList: getTemplateList,
+    UPLOAD_URL: UPLOAD_URL,
+    LOAD_URL: LOAD_URL
   };
 })();

@@ -59,6 +59,10 @@
       return thisCoordinate;
     }
   };
+  var mainPinDafaultPosition = {
+    x: DEFAULT_PIN_X_COORD,
+    y: DEFAULT_PIN_Y_COORD
+  };
   var mainPinPosition = {
     x: DEFAULT_PIN_X_COORD,
     y: DEFAULT_PIN_Y_COORD
@@ -69,6 +73,10 @@
     mainPinPosition.x = positionX;
     mainPinPosition.y = positionY;
   };
+  var setDefaultPositionOfMainPin = function () {
+    mapMainPin.style.top = (mainPinDafaultPosition.y) + 'px';
+    mapMainPin.style.left = (mainPinDafaultPosition.x) + 'px';
+  };
   var mapActivate = function (isActivate) {
     if (isActivate) {
       map.classList.remove('map--faded');
@@ -77,12 +85,29 @@
       map.classList.add('map--faded');
     }
   };
-  var clearMap = function () {
+  var clearMap = function (hidden) {
+    var card = map.querySelector('.map__card');
     var elementsForRemove = getMapPinArray();
     elementsForRemove.forEach(function (item) {
       item.remove();
     });
-    map.querySelector('.map__card').remove();
+    if (hidden && card) {
+      card.style.display = 'none';
+    } else if (card) {
+      card.remove();
+      window.map.isCardRender = false;
+    }
+  };
+  var onPinClick = function (evt) {
+    var serialNumber;
+
+    if (evt.target.hasAttribute('data-serial-number')) {
+      serialNumber = evt.target.getAttribute('data-serial-number');
+      window.renderCards.showCard(serialNumber);
+    } else if (evt.target.tagName !== 'HTML' && evt.target.parentElement.hasAttribute('data-serial-number')) {
+      serialNumber = evt.target.parentElement.getAttribute('data-serial-number');
+      window.renderCards.showCard(serialNumber);
+    }
   };
   var onMouseDown = function (evt) {
     var startCoords = {
@@ -101,7 +126,7 @@
         x: getAllowedCoordinate(extremePosition.minX, extremePosition.maxX, moveEvt.pageX),
         y: getAllowedCoordinate(extremePosition.minY, extremePosition.maxY, moveEvt.pageY)
       };
-      window.form.fillAddressInput(true);
+      window.form.fillAddressInput(false, true);
       mapMainPin.style.top = (mapMainPin.offsetTop - shift.y) + 'px';
       mapMainPin.style.left = (mapMainPin.offsetLeft - shift.x) + 'px';
     };
@@ -114,6 +139,7 @@
     document.addEventListener('mouseup', onMouseUp);
   };
   window.map = {
+    onPinClick: onPinClick,
     onCloseButton: onCloseButton,
     isCardRender: isCardRender,
     isActivePage: isActivePage,
@@ -125,6 +151,8 @@
     mapFilter: mapFilter,
     getPositionOfMainPin: getPositionOfMainPin,
     mainPinPosition: mainPinPosition,
+    mainPinDafaultPosition: mainPinDafaultPosition,
+    setDefaultPositionOfMainPin: setDefaultPositionOfMainPin,
     mapActivate: mapActivate,
     onMouseDown: onMouseDown
   };
