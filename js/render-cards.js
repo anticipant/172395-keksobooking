@@ -7,17 +7,16 @@
   var getListFeatures = function (feature) {
     var listFeatures = '';
 
-    for (var l = 0; l < feature.length; l++) {
-      listFeatures = listFeatures + '<li class="feature feature--' + feature[l] + '"></li>';
-    }
+    feature.forEach(function (item) {
+      listFeatures = listFeatures + '<li class="feature feature--' + item + '"></li>';
+    });
     return listFeatures;
   };
   var getListPhotos = function (photo) {
     var listPhotos = '';
-
-    for (var l = 0; l < photo.length; l++) {
-      listPhotos = listPhotos + '<li><img src="' + photo[l] + '" width="70" height="70"></li>';
-    }
+    photo.forEach(function (item) {
+      listPhotos = listPhotos + '<li><img src="' + item + '" width="70" height="70"></li>';
+    });
     return listPhotos;
   };
   var getRoomsWordForm = function (countOfRooms) {

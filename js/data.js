@@ -6,9 +6,9 @@
     window.errorMessage(message);
   };
   var onLoad = function (data) {
-    for (var i = 0; i < data.length; i++) {
-      data[i].id = i;
-    }
+    data.forEach(function (item, index) {
+      item.id = index;
+    });
     window.data = data;
   };
   window.load('GET', window.util.LOAD_URL, onLoad, onError);
