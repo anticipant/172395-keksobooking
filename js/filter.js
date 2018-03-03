@@ -1,13 +1,11 @@
 'use strict';
 
 (function () {
-  var DEBOUNCE_INTERVAL = 500;
   var Price = {
     HIGH: 50000,
     LOW: 10000
   };
   var MAX_FILTERED_ANNOUNCMENT = 5;
-  var lastTimeout;
   var filters = document.querySelector('.map__filters');
   var featuresInputs = filters.querySelectorAll('#housing-features input');
   var getFilterResult = function (index, selectId) {
@@ -15,6 +13,9 @@
     var parameter = document.querySelector('#' + selectId).value;
 
     return parameter === 'any' || index.offer[announcmentObjectVariable] === parameter || index.offer[announcmentObjectVariable] === +parameter;
+  };
+  var resetFilter = function () {
+    filters.reset();
   };
   var priceFilterResult = function (index) {
     var price = document.querySelector('#housing-price').value;
@@ -64,27 +65,25 @@
         featuresFilterResult(announcementNumber);
     });
   };
+  var getAndRenderFilteredData = function () {
+    var countOfAnnouncments;
+    var filteredData = filteredArray();
+    window.map.clearMap(true);
+    if (filteredData.length <= MAX_FILTERED_ANNOUNCMENT) {
+      countOfAnnouncments = filteredData.length;
+    } else {
+      countOfAnnouncments = MAX_FILTERED_ANNOUNCMENT;
+    }
+    window.util.showFilteredPins(window.renderPins, window.map.mapPins, filteredData, countOfAnnouncments);
+  };
   var updateFilteredAds = function (evt) {
     if (evt.target.classList.contains('map__filter') || evt.target.parentElement.classList.contains('map__filter-set')) {
-
-      if (lastTimeout) {
-        window.clearTimeout(lastTimeout);
-      }
-      lastTimeout = window.setTimeout(function () {
-        var countOfAnnouncments; // верно ли я сделал изменив название на мн.ч.
-        var filteredData = filteredArray();
-        window.map.clearMap(true);
-        if (filteredData.length <= MAX_FILTERED_ANNOUNCMENT) {
-          countOfAnnouncments = filteredData.length;
-        } else {
-          countOfAnnouncments = MAX_FILTERED_ANNOUNCMENT;
-        }
-        window.util.showFilteredPins(window.renderPins, window.map.mapPins, filteredData, countOfAnnouncments);
-      }, DEBOUNCE_INTERVAL);
+      window.debounce(getAndRenderFilteredData);
     }
   };
-  filters.addEventListener('change', updateFilteredAds);
-  window.resetFilter = function () {
-    filters.reset();
+  window.filter = {
+    filterBlock: filters,
+    updateFilteredAds: updateFilteredAds,
+    resetFilter: resetFilter
   };
 })();

@@ -89,7 +89,15 @@
     articleCard.querySelector('.popup__pictures').innerHTML = getListPhotos(announcement.offer.photos);
     articleCard.querySelector('.popup__avatar').setAttribute('src', announcement.author.avatar);
   };
+  var showCard = function (serialNumber) {
+    if (!window.map.isCardRender) {
+      window.map.isCardRender = true;
+      window.util.getTemplateList(render, window.map.mapBlock, window.map.mapFilter, serialNumber);
+    }
+    window.renderCards.refresh(window.data, serialNumber);
+  };
   window.renderCards = {
+    showCard: showCard,
     render: render,
     refresh: refresh
   };

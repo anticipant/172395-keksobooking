@@ -98,6 +98,17 @@
       window.map.isCardRender = false;
     }
   };
+  var onPinClick = function (evt) {
+    var serialNumber;
+
+    if (evt.target.hasAttribute('data-serial-number')) {
+      serialNumber = evt.target.getAttribute('data-serial-number');
+      window.renderCards.showCard(serialNumber);
+    } else if (evt.target.tagName !== 'HTML' && evt.target.parentElement.hasAttribute('data-serial-number')) {
+      serialNumber = evt.target.parentElement.getAttribute('data-serial-number');
+      window.renderCards.showCard(serialNumber);
+    }
+  };
   var onMouseDown = function (evt) {
     var startCoords = {
       x: evt.pageX,
@@ -128,6 +139,7 @@
     document.addEventListener('mouseup', onMouseUp);
   };
   window.map = {
+    onPinClick: onPinClick,
     onCloseButton: onCloseButton,
     isCardRender: isCardRender,
     isActivePage: isActivePage,

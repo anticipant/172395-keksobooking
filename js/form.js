@@ -100,7 +100,7 @@
       }
     }
   };
-  var checkingForCompliance = function () {
+  var setValidityMessage = function () {
     var capacityOption = capacity.querySelector('[value="' + capacity.value + '"]');
     var capacityOptionText = capacityOption.textContent;
 
@@ -111,7 +111,7 @@
     var valueOfTarget = +targetElement.value;
 
     refreshDisabledOption(valueOfTarget);
-    checkingForCompliance();
+    setValidityMessage();
   };
   var setErrorBorder = function (thisInput, isNeed) {
     if (isNeed) {
@@ -126,14 +126,18 @@
   var resetPage = function () {
     window.map.clearMap();
     window.map.mapActivate(false);
-    window.resetFilter();
+    window.filter.resetFilter();
     resetForm();
     formActivate(false);
     fillAddressInput(true, false);
     window.map.setDefaultPositionOfMainPin();
+    window.map.mapBlock.removeEventListener('click', window.map.onPinClick);
+    form.removeEventListener('submit', onSubmitForm);
+    resetButtom.removeEventListener('click', resetPage);
+    window.filter.filterBlock.removeEventListener('change', window.filter.updateFilteredAds);
   };
   var addFormListeners = function () {
-    document.addEventListener('change', function (evt) {
+    form.addEventListener('change', function (evt) {
       var idCompare = evt.target.getAttribute('id');
 
       switch (idCompare) {
@@ -152,7 +156,7 @@
           togglePermitOfAvailableGuests(evt);
           break;
         case 'capacity':
-          checkingForCompliance(evt);
+          setValidityMessage();
           break;
       }
     });
@@ -162,25 +166,23 @@
       });
     });
   };
-
+  var onError = function (message) {
+    window.errorMessage(message);
+  };
+  var onLoad = function () {
+    resetPage();
+  };
+  var onSubmitForm = function (evt) {
+    window.load('POST', window.util.UPLOAD_URL, onLoad, onError, new FormData(form));
+    evt.preventDefault();
+  };
   window.form = {
+    resetButtom: resetButtom,
+    formBlock: form,
+    resetPage: resetPage,
+    onSubmitForm: onSubmitForm,
     formActivate: formActivate,
     fillAddressInput: fillAddressInput,
     addFormListeners: addFormListeners
   };
-  var onError = function (message) {
-    window.errorMessage(message);
-  };
-
-  var onLoad = function () {
-    resetPage();
-  };
-  resetButtom.addEventListener('click', function (evt) {
-    evt.preventDefault();
-    resetPage();
-  });
-  form.addEventListener('submit', function (evt) {
-    window.load('POST', window.util.UPLOAD_URL, onLoad, onError, new FormData(form));
-    evt.preventDefault();
-  });
 })();
