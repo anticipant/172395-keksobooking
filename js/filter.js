@@ -6,8 +6,8 @@
     LOW: 10000
   };
   var MAX_FILTERED_ANNOUNCMENT = 5;
-  var filters = document.querySelector('.map__filters');
-  var featuresInputs = filters.querySelectorAll('#housing-features input');
+  var filtersForm = document.querySelector('.map__filters');
+  var featuresInputs = filtersForm.querySelectorAll('#housing-features input');
   var getFilterResult = function (index, selectId) {
     var announcmentObjectVariable = selectId.slice(selectId.indexOf('-') + 1);
     var parameter = document.querySelector('#' + selectId).value;
@@ -15,9 +15,9 @@
     return parameter === 'any' || index.offer[announcmentObjectVariable] === parameter || index.offer[announcmentObjectVariable] === +parameter;
   };
   var resetFilter = function () {
-    filters.reset();
+    filtersForm.reset();
   };
-  var priceFilterResult = function (index) {
+  var getPriceFilterResult = function (index) {
     var price = document.querySelector('#housing-price').value;
     var result;
     var indexPrice = index.offer.price;
@@ -38,7 +38,7 @@
       return result;
     }
   };
-  var featuresFilterResult = function (index) {
+  var getFeaturesFilterResult = function (index) {
     var checkboxFilterArray = [];
 
     featuresInputs.forEach(function (item) {
@@ -56,24 +56,19 @@
       });
     }
   };
-  var filteredArray = function () {
+  var getFilteredArray = function () {
     return window.data.filter(function (announcementNumber) {
       return getFilterResult(announcementNumber, 'housing-type') &&
         getFilterResult(announcementNumber, 'housing-rooms') &&
         getFilterResult(announcementNumber, 'housing-guests') &&
-        priceFilterResult(announcementNumber) &&
-        featuresFilterResult(announcementNumber);
+        getPriceFilterResult(announcementNumber) &&
+        getFeaturesFilterResult(announcementNumber);
     });
   };
   var getAndRenderFilteredData = function () {
-    var countOfAnnouncments;
-    var filteredData = filteredArray();
+    var filteredData = getFilteredArray();
+    var countOfAnnouncments = filteredData.length <= MAX_FILTERED_ANNOUNCMENT ? filteredData.length : MAX_FILTERED_ANNOUNCMENT;
     window.map.clearMap(true);
-    if (filteredData.length <= MAX_FILTERED_ANNOUNCMENT) {
-      countOfAnnouncments = filteredData.length;
-    } else {
-      countOfAnnouncments = MAX_FILTERED_ANNOUNCMENT;
-    }
     window.util.showFilteredPins(window.renderPins, window.map.mapPins, filteredData, countOfAnnouncments);
   };
   var updateFilteredAds = function (evt) {
@@ -82,7 +77,7 @@
     }
   };
   window.filter = {
-    filterBlock: filters,
+    filtersForm: filtersForm,
     updateFilteredAds: updateFilteredAds,
     resetFilter: resetFilter
   };
