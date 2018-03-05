@@ -103,10 +103,10 @@
 
     if (evt.target.hasAttribute('data-serial-number')) {
       serialNumber = evt.target.getAttribute('data-serial-number');
-      window.renderCards.showCard(serialNumber);
+      window.renderCard(serialNumber);
     } else if (evt.target.tagName !== 'HTML' && evt.target.parentElement.hasAttribute('data-serial-number')) {
       serialNumber = evt.target.parentElement.getAttribute('data-serial-number');
-      window.renderCards.showCard(serialNumber);
+      window.renderCard(serialNumber);
     }
   };
   var onMouseDown = function (evt) {
@@ -144,7 +144,6 @@
     isCardRender: isCardRender,
     isActivePage: isActivePage,
     clearMap: clearMap,
-    getMapPinArray: getMapPinArray,
     mapBlock: map,
     mapMainPin: mapMainPin,
     mapPins: mapPins,

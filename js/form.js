@@ -114,11 +114,7 @@
     setValidityMessage();
   };
   var setErrorBorder = function (thisInput, isNeed) {
-    if (isNeed) {
-      thisInput.style.border = '2px solid red';
-    } else {
-      thisInput.style.border = '';
-    }
+    thisInput.style.border = isNeed ? '2px solid red' : '';
   };
   var checkValdity = function (inputElement) {
     setErrorBorder(inputElement.target, !inputElement.target.validity.valid);
@@ -134,7 +130,7 @@
     window.map.mapBlock.removeEventListener('click', window.map.onPinClick);
     form.removeEventListener('submit', onSubmitForm);
     resetButtom.removeEventListener('click', resetPage);
-    window.filter.filterBlock.removeEventListener('change', window.filter.updateFilteredAds);
+    window.filter.filtersForm.removeEventListener('change', window.filter.updateFilteredAds);
   };
   var addFormListeners = function () {
     form.addEventListener('change', function (evt) {
