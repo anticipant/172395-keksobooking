@@ -39,19 +39,19 @@
     }
   };
   var getFeaturesFilterResult = function (index) {
-    var checkboxFilterArray = [];
+    var checkboxes = [];
 
     featuresInputs.forEach(function (item) {
       if (item.checked) {
-        checkboxFilterArray.push(item.value);
+        checkboxes.push(item.value);
       }
     });
     var features = index.offer.features;
 
-    if (checkboxFilterArray.length === 0) {
+    if (checkboxes.length === 0) {
       return true;
     } else {
-      return checkboxFilterArray.every(function (item) {
+      return checkboxes.every(function (item) {
         return features.indexOf(item) !== -1;
       });
     }
